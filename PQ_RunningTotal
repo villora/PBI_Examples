@@ -1,0 +1,9 @@
+let
+    Source = Excel.Workbook(File.Contents("C:\prueba list.xlsx"), null, true),
+    Sheet1_Sheet = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+    #"Added Index" = Table.AddIndexColumn(#"Promoted Headers", "Index", 0, 1, Int64.Type),
+    #"Changed Type" = Table.TransformColumnTypes(#"Added Index",{{"Dato", Int64.Type}, {"Dato-1 ", Int64.Type}, {"Dif", Int64.Type}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type", "Custom", each List.Sum(List.Range(#"Changed Type"[Dif],0,[Index])))
+in
+    #"Added Custom"
